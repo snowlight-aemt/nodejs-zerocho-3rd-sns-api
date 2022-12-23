@@ -11,6 +11,7 @@ const { sequelize } = require('./models');
 dotenv.config(); // 여기부터 사용할 수 있다. => (process.env.COOKIE_SECRET)
 const authRouter = require('./routes/auth');
 const indexRouter = require('./routes')
+const v1Router = require('./routes/v1')
 const passportConfig = require('./passport');
 
 const app = express();
@@ -23,7 +24,8 @@ nunjucks.configure('views', {
 });
 
 // 데이터베이스 생성 명령 : npx sequelize db:create
-sequelize.sync({ force:true }) // 테이블 삭제 후 다시 생성
+// sequelize.sync({ force:true }) // 테이블 삭제 후 다시 생성
+sequelize.sync()
     .then(() => {
         console.log('데이터베이스 연결 성공');
     })
@@ -52,6 +54,7 @@ app.use(passport.session());
 
 app.use('/auth', authRouter);
 app.use('/', indexRouter);
+app.use('/v1', v1Router);
 
 // 미들웨어는 next(error) 를 해야지만 다음 미들웨어로 이동한다.
 // 404 NOT FOUND
