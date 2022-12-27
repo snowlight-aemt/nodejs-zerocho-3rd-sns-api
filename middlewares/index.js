@@ -1,5 +1,8 @@
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
+const cors = require('cors');
+
+const Domain = require('../models/domain');
 
 exports.isLoggedIn = (req, res, next) => {
     // isAuthenticated: passport 통해서 로그인 했는지 
@@ -47,11 +50,27 @@ exports.apiLimiter = rateLimit({
             message: '1분에 한 번만 요청할 수 있습니다.',
         });
     }
-})
+});
 
 exports.deprecated = (req, res) => {
     res.status(410).json({
         code: 410,
         message: '새로운 버전 나왔습니다. 새로운 버전을 사용하세요.,'
     });
-}
+};
+
+exports.corsWhenDomainMatch = async (req, res, next) => {
+    console.log(req.get('origin'));
+    const domain = await Domain.findOne({
+        where: { host: new URL(req.get('origin')).host }
+    });
+
+    if (domain) {
+        cors({
+            origin: req.get('origin'),
+            credentials: true,
+        })(req, res, next);
+    } else {
+        next();
+    }
+};
