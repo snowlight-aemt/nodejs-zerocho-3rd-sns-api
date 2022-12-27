@@ -12,6 +12,7 @@ dotenv.config(); // 여기부터 사용할 수 있다. => (process.env.COOKIE_SE
 const authRouter = require('./routes/auth');
 const indexRouter = require('./routes')
 const v1Router = require('./routes/v1')
+const v2Router = require('./routes/v2')
 const passportConfig = require('./passport');
 
 const app = express();
@@ -55,6 +56,7 @@ app.use(passport.session());
 app.use('/auth', authRouter);
 app.use('/', indexRouter);
 app.use('/v1', v1Router);
+app.use('/v2', v2Router);
 
 // 미들웨어는 next(error) 를 해야지만 다음 미들웨어로 이동한다.
 // 404 NOT FOUND
